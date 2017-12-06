@@ -3,7 +3,7 @@
 <configuration>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${catalina.home}/logs/test-inovus.log</file>
+        <file>${catalina.home}/logs/inovus-test.log</file>
         <param name="immediateFlush" value="true"/>
         <param name="append" value="false"/>
 
@@ -17,7 +17,7 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>

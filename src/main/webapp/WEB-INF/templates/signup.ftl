@@ -20,12 +20,10 @@
         <p id="reg_msg" style="color: red"></p>
         <label for="reg_username">Имя пользователя</label>
         <input type="text" name="reg_username" id="reg_username" oninput="correctUsername()" required/>
-    <#--<br/>-->
 
         <p id="reg_psw_msg" style="color: red"></p>
         <label for="reg_password">Пароль</label>
         <input type="password" name="reg_password" id="reg_password" oninput="correctPassword()" required>
-    <#--<br/>-->
 
         <p id="reg_rpt_psw_msg" style="color: red"></p>
         <label for="reg_password_repeat">Повтор пароля</label>

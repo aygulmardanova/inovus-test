@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import sun.applet.Main;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -20,9 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.time.LocalDateTime;
 import java.util.regex.Pattern;
-
 
 @Controller
 public class MainController {
@@ -90,12 +87,13 @@ public class MainController {
         boolean isCorrect = userService.isCorrectUser(username.toLowerCase(), password);
         if (!isCorrect) {
             model.addAttribute("error_msg", true);
+            LOGGER.warn("Вход не выполнен. Неверные имя пользователя или пароль: " + username + ".");
             return "redirect:sign-in";
         }
         Cookie newCookie = new Cookie("username", username);
         response.addCookie(newCookie);
         userService.updateLastVisit(username, ip);
-        LOGGER.info("Пользователь " + username + " выполнил вход в систему.");
+        LOGGER.info("Пользователь \'" + username + "\' выполнил вход в систему.");
 
         session.setAttribute("username", username);
         return "redirect:greetings";
@@ -124,12 +122,13 @@ public class MainController {
         String ifCorrectCredentials = validateCredentials(username.trim().toLowerCase(), password, password_repeat);
         model.addAttribute("server_msg", ifCorrectCredentials);
         if (ifCorrectCredentials != null) {
-            LOGGER.warn("Ошибка при регистрации: " + ifCorrectCredentials);
+            LOGGER.warn("Ошибка при регистрации нового пользователя: \'" + username + "\'. " + ifCorrectCredentials);
             return "redirect:sign-up";
         }
         userService.saveUser(username, password);
         userService.updateLastVisit(username, InetAddress.getLocalHost().getHostAddress());
         session.setAttribute("username", username);
+        LOGGER.info("Зарегистрирован пользователь: \'" + username + "\', \'" + password + "\'");
 
         return "redirect:greetings";
     }
@@ -162,8 +161,11 @@ public class MainController {
     public String logOutGet(ModelMap model,
                             HttpSession session,
                             HttpServletResponse response) throws IOException {
-        session.invalidate();
-        model.addAttribute("logout_msg", true);
+        if (session.getAttribute("username") != null) {
+            LOGGER.info("Пользователь \'" + session.getAttribute("username") + "\' вышел из системы.");
+            session.invalidate();
+            model.addAttribute("logout_msg", true);
+        }
         return "redirect:sign-in";
     }
 
@@ -176,7 +178,6 @@ public class MainController {
         }
         return "false";
     }
-
 
     private String validateCredentials(String username, String password, String password_repeat) {
         if (userService.getUserByUsername(username) != null) {
