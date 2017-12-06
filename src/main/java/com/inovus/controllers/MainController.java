@@ -3,6 +3,8 @@ package com.inovus.controllers;
 import com.inovus.models.User;
 import com.inovus.services.interfaces.PagesStatisticService;
 import com.inovus.services.interfaces.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.applet.Main;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +32,8 @@ public class MainController {
 
     @Autowired
     PagesStatisticService pagesStatisticService;
+
+    final static Logger LOGGER = LoggerFactory.getLogger(MainController.class);
 
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9.]{3,20}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,20}$");
@@ -90,6 +95,7 @@ public class MainController {
         Cookie newCookie = new Cookie("username", username);
         response.addCookie(newCookie);
         userService.updateLastVisit(username, ip);
+        LOGGER.info("Пользователь " + username + " выполнил вход в систему.");
 
         session.setAttribute("username", username);
         return "redirect:greetings";
@@ -118,6 +124,7 @@ public class MainController {
         String ifCorrectCredentials = validateCredentials(username.trim().toLowerCase(), password, password_repeat);
         model.addAttribute("server_msg", ifCorrectCredentials);
         if (ifCorrectCredentials != null) {
+            LOGGER.warn("Ошибка при регистрации: " + ifCorrectCredentials);
             return "redirect:sign-up";
         }
         userService.saveUser(username, password);
@@ -147,7 +154,6 @@ public class MainController {
         model.addAttribute("user", user);
         String servletPath = request.getServletPath().substring(1, request.getServletPath().length());
         pagesStatisticService.updateCountByPage(servletPath);
-        System.out.println(pagesStatisticService.getCountByPage(servletPath));
         model.addAttribute("count", pagesStatisticService.getCountByPage(servletPath));
         return "greetings";
     }
@@ -165,7 +171,6 @@ public class MainController {
     public @ResponseBody
     String returnIfUsernameExists(ModelMap model,
                                @RequestParam(value = "username") String username) {
-        System.out.println(username);
         if (userService.getUserByUsername(username) != null) {
             return "true";
         }
