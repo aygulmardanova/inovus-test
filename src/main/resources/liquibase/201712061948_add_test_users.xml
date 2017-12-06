@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="insert.test_users" author="aygul.mardanova">
+
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT count(*) FROM public.users WHERE lower(username) = 'myuser'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT count(*) FROM public.users WHERE lower(username) = 'myuser1'</sqlCheck>
+        </preConditions>
+
+        <sql>
+            INSERT INTO public.users(username, password) VALUES('myuser', 'Myuser123');
+            INSERT INTO public.users(username, password) VALUES('myuser1', 'Myuser12345');
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

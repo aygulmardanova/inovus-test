@@ -33,6 +33,12 @@ public class MainController {
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9.]{3,20}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,20}$");
 
+    private static final String BUSY_USERNAME_MESSAGE = "Такое имя пользователя уже занято";
+    public static final String INCORRECT_USERNAME_MESSAGE = "Имя пользователя должно быть длиннее 4 символов и состоять из цифр, букв английского алфавита и точек. Первый символ - обязательно буква.";
+    private static final String INCORRECT_PASSWORD_MESSAGE = "Пароль недостаточно сложен: должны быть цифры, заглавные и строчные буквы и длина минимум 8 символов.";
+    private static final String INCORRECT_PASSWORD_REPEAT_MESSAGE = "Пароль и повтор пароля не совпадают.";
+
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String redirectToGreetingsPage(ModelMap model) throws IOException {
 
@@ -166,15 +172,23 @@ public class MainController {
         return "false";
     }
 
+
     private String validateCredentials(String username, String password, String password_repeat) {
         if (userService.getUserByUsername(username) != null) {
-            return "Такое имя пользователя уже занято";
-        } else if (!USERNAME_PATTERN.matcher(username).matches()) {
-            return "Имя пользователя должно быть длиннее 4 символов и состоять из цифр, букв английского алфавита и точек. Первый символ - обяательно буква.";
+            return BUSY_USERNAME_MESSAGE;
+        } else if (validateUsername(username) != null) {
+            return INCORRECT_USERNAME_MESSAGE;
         } else if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            return "Пароль недостаточно сложен: должны быть цифры, заглавные и строчные буквы и длина минимум 8 символов";
+            return INCORRECT_PASSWORD_MESSAGE;
         } else if (!password.equals(password_repeat)) {
-            return "Пароль и повтор пароля не совпадают";
+            return INCORRECT_PASSWORD_REPEAT_MESSAGE;
+        }
+        return null;
+    }
+
+    public static String validateUsername(String username) {
+        if (!USERNAME_PATTERN.matcher(username).matches()) {
+            return INCORRECT_USERNAME_MESSAGE;
         }
         return null;
     }

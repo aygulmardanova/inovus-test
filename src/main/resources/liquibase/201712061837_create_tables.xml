@@ -1,0 +1,44 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create.users_table" author="aygul.mardanova">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users" schemaName="public"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users">
+            <column name="id" autoIncrement="true" type="serial" startWith="1" incrementBy="1">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(256)"/>
+            <column name="password" type="varchar(256)"/>
+            <column name="last_visit_ip" type="varchar(256)"/>
+            <column name="last_visit_time" type="timestamp"/>
+            <column name="new_visit_ip" type="varchar(256)"/>
+            <column name="new_visit_time" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create.pages_statistics_table" author="aygul.mardanova">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="pages_statistics" schemaName="public"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="pages_statistics">
+            <column name="id" autoIncrement="true" type="serial" startWith="1" incrementBy="1">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="page" type="varchar(256)"/>
+            <column name="count" type="int"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

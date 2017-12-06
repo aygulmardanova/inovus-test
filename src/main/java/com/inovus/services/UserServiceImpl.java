@@ -31,8 +31,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isCorrectUser(String username, String password) {
-        User user = userRepository.findByUsernameAndPassword(username, password);
-        return user != null;
+        User user = userRepository.findByUsernameIgnoreCase(username);
+        if (user != null) {
+            return user.getPassword().equals(password);
+        }
+        return false;
     }
 
     @Override
