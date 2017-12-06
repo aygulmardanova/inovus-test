@@ -1,0 +1,23 @@
+function checkLogForm() {
+
+    var username = $("#log_username").val();
+    var password = $("#log_password").val();
+    if (username == '' ||
+        password == '') {
+        $("#fill_msg").innerHTML = 'Необходимо ввести учетные данные';
+        if ($("#logout_msg") != null) {
+            $("#logout_msg").style.display = "none";
+        }
+        if ($("#error_msg") != null) {
+            $("#error_msg").style.display = "none";
+        }
+        return false;
+    } else {
+        return true;
+    }
+}
+
+
+ onsubmit="return checkRegForm();"
+
+     return (correctUsername() && correctPassword() && correctPasswordRepeat())
